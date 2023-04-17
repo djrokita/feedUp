@@ -3,8 +3,8 @@ import React, { Component, Fragment } from 'react';
 
 import Layout from './components/Layout/Layout';
 // import Backdrop from './components/Backdrop/Backdrop';
-// import Toolbar from './components/Toolbar/Toolbar';
-// import MainNavigation from './components/Navigation/MainNavigation/MainNavigation';
+import Toolbar from './components/Toolbar/Toolbar';
+import MainNavigation from './components/Navigation/MainNavigation/MainNavigation';
 // import MobileNavigation from './components/Navigation/MobileNavigation/MobileNavigation';
 // import ErrorHandler from './components/ErrorHandler/ErrorHandler';
 // import FeedPage from './pages/Feed/Feed';
@@ -12,6 +12,7 @@ import Layout from './components/Layout/Layout';
 // import LoginPage from './pages/Auth/Login';
 // import SignupPage from './pages/Auth/Signup';
 import './App.css';
+import { Outlet } from 'react-router-dom';
 
 class App extends Component {
   state = {
@@ -40,10 +41,6 @@ class App extends Component {
     this.setState({ isAuth: true, token: token, userId: userId });
     // this.setAutoLogout(remainingMilliseconds);
   }
-
-  mobileNavHandler = (isOpen: boolean) => {
-    this.setState({ showMobileNav: isOpen, showBackdrop: isOpen });
-  };
 
   backdropClickHandler = () => {
     this.setState({ showBackdrop: false, showMobileNav: false, error: null });
@@ -153,29 +150,30 @@ class App extends Component {
   //   }, milliseconds);
   // };
 
-  errorHandler = () => {
-    this.setState({ error: null });
-  };
+  // errorHandler = () => {
+  //   this.setState({ error: null });
+  // };
 
   render() {
     return (
-      <>
-        <Layout
-          header={<Toolbar>
-            <MainNavigation
-              onOpenMobileNav={this.mobileNavHandler.bind(this, true)}
-              onLogout={this.logoutHandler}
-              isAuth={this.state.isAuth} />
-          </Toolbar>}
-          mobileNav={<MobileNavigation
-            open={this.state.showMobileNav}
-            mobile
-            onChooseItem={this.mobileNavHandler.bind(this, false)}
+      <Layout
+        header={<Toolbar>
+          <MainNavigation
+            // onOpenMobileNav={this.mobileNavHandler.bind(this, true)}
             onLogout={this.logoutHandler}
-            isAuth={this.state.isAuth} />} children={undefined}        />
+            isAuth={this.state.isAuth} />
+        </Toolbar>}
+      // mobileNav={<MobileNavigation
+      //   open={this.state.showMobileNav}
+      //   mobile
+      //   onChooseItem={this.mobileNavHandler.bind(this, false)}
+      //   onLogout={this.logoutHandler}
+      //   isAuth={this.state.isAuth} />} 
+      // children={undefined}        
+      >
         {/* {routes} */}
-        <div>DUPA</div>
-      </>
+        <Outlet />
+      </Layout>
     );
   }
 }
