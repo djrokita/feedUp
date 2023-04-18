@@ -11,8 +11,8 @@ import MainNavigation from './components/Navigation/MainNavigation/MainNavigatio
 // import SinglePostPage from './pages/Feed/SinglePost/SinglePost';
 // import LoginPage from './pages/Auth/Login';
 // import SignupPage from './pages/Auth/Signup';
-import './App.css';
 import { Outlet } from 'react-router-dom';
+import { retrieveToken } from './utils/auth';
 
 class App extends Component {
   state = {
@@ -180,3 +180,9 @@ class App extends Component {
 
 // export default withRouter(App);
 export default App;
+
+export function loader() {
+  return retrieveToken();
+
+  // return null;
+}
