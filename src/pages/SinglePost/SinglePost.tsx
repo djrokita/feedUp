@@ -15,7 +15,7 @@ export async function loader({ params }: { params: Params; }) {
     const token = retrieveToken();
 
     if (!token) {
-        return redirect('/');
+        return redirect('/auth');
     }
 
     const response = await fetch('http://localhost:8080/feed/post/' + params.postId, {

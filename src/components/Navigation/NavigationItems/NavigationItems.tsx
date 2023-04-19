@@ -1,4 +1,4 @@
-import { NavLink, useRouteLoaderData } from 'react-router-dom';
+import { Form, Link, NavLink, useRouteLoaderData } from 'react-router-dom';
 
 import './NavigationItems.css';
 
@@ -10,26 +10,25 @@ const navItems = [
 ];
 
 type NavigationItemsProps = {
-  onLogout(): void;
   // mobile: boolean;
+  text: string;
+  link: string;
 };
 
-function NavigationItems(props: NavigationItemsProps) {
-  const isAuth = useRouteLoaderData('root');
+function NavigationItem(props: NavigationItemsProps) {
 
-  return [
-    ...navItems.filter(item => item.auth === isAuth).map(item => (
+  return (
+    <>
       <li
-        key={item.id}
         // className={['navigation-item', props.mobile ? 'mobile' : ''].join(' ')}
         className='navigation-item'
       >
-        <NavLink to={item.link}>
-          {item.text}
+        <NavLink to={props.link}>
+          {props.text}
         </NavLink>
       </li>
-    )),
-  ];
+    </>
+  );
 }
 
-export default NavigationItems;
+export default NavigationItem;

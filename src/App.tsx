@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-// import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
+
 
 import Layout from './components/Layout/Layout';
 // import Backdrop from './components/Backdrop/Backdrop';
@@ -14,44 +14,46 @@ import MainNavigation from './components/Navigation/MainNavigation/MainNavigatio
 import { Outlet } from 'react-router-dom';
 import { checkIsAuth, retrieveToken } from './utils/auth';
 
-class App extends Component {
-  state = {
-    showBackdrop: false,
-    showMobileNav: false,
-    isAuth: false,
-    token: null,
-    userId: null,
-    authLoading: false,
-    error: null
-  };
+function App() {
+  // state = {
+  //   showBackdrop: false,
+  //   showMobileNav: false,
+  //   isAuth: false,
+  //   token: null,
+  //   userId: null,
+  //   authLoading: false,
+  //   error: null
+  // };
+  const isAuth = useLoaderData();
+  console.log("APP isAuth:", isAuth);
 
-  componentDidMount() {
-    const token = localStorage.getItem('token');
-    const expiryDate = localStorage.getItem('expiryDate');
-    if (!token || !expiryDate) {
-      return;
-    }
-    if (new Date(expiryDate) <= new Date()) {
-      this.logoutHandler();
-      return;
-    }
-    const userId = localStorage.getItem('userId');
-    const remainingMilliseconds =
-      new Date(expiryDate).getTime() - new Date().getTime();
-    this.setState({ isAuth: true, token: token, userId: userId });
-    // this.setAutoLogout(remainingMilliseconds);
-  }
+  // componentDidMount() {
+  //   const token = localStorage.getItem('token');
+  //   const expiryDate = localStorage.getItem('expiryDate');
+  //   if (!token || !expiryDate) {
+  //     return;
+  //   }
+  //   if (new Date(expiryDate) <= new Date()) {
+  //     this.logoutHandler();
+  //     return;
+  //   }
+  //   const userId = localStorage.getItem('userId');
+  //   const remainingMilliseconds =
+  //     new Date(expiryDate).getTime() - new Date().getTime();
+  //   this.setState({ isAuth: true, token: token, userId: userId });
+  //   // this.setAutoLogout(remainingMilliseconds);
+  // }
 
-  backdropClickHandler = () => {
-    this.setState({ showBackdrop: false, showMobileNav: false, error: null });
-  };
+  // backdropClickHandler = () => {
+  //   this.setState({ showBackdrop: false, showMobileNav: false, error: null });
+  // };
 
-  logoutHandler = () => {
-    this.setState({ isAuth: false, token: null });
-    localStorage.removeItem('token');
-    localStorage.removeItem('expiryDate');
-    localStorage.removeItem('userId');
-  };
+  // logoutHandler = () => {
+  //   this.setState({ isAuth: false, token: null });
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('expiryDate');
+  //   localStorage.removeItem('userId');
+  // };
 
   // loginHandler = (event, authData) => {
   //   event.preventDefault();
@@ -154,34 +156,33 @@ class App extends Component {
   //   this.setState({ error: null });
   // };
 
-  render() {
-    return (
-      <Layout
-        header={<Toolbar>
-          <MainNavigation
-            // onOpenMobileNav={this.mobileNavHandler.bind(this, true)}
-            onLogout={this.logoutHandler}
-            isAuth={this.state.isAuth} />
-        </Toolbar>}
-      // mobileNav={<MobileNavigation
-      //   open={this.state.showMobileNav}
-      //   mobile
-      //   onChooseItem={this.mobileNavHandler.bind(this, false)}
-      //   onLogout={this.logoutHandler}
-      //   isAuth={this.state.isAuth} />} 
-      // children={undefined}        
-      >
-        {/* {routes} */}
-        <Outlet />
-      </Layout>
-    );
-  }
+
+  return (
+    <Layout
+      header={<Toolbar>
+        <MainNavigation
+        // onOpenMobileNav={this.mobileNavHandler.bind(this, true)}
+        />
+      </Toolbar>}
+    // mobileNav={<MobileNavigation
+    //   open={this.state.showMobileNav}
+    //   mobile
+    //   onChooseItem={this.mobileNavHandler.bind(this, false)}
+    //   onLogout={this.logoutHandler}
+    //   isAuth={this.state.isAuth} />} 
+    // children={undefined}        
+    >
+      {/* {routes} */}
+      <Outlet />
+    </Layout>
+  );
 }
 
 // export default withRouter(App);
 export default App;
 
-export function loader() {
+export function loader({ request }) {
+  console.log("🚀 ~ file: App.tsx:184 ~ loader ~ request:", request);
   return checkIsAuth();
 
   // return null;

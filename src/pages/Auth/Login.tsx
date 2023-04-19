@@ -5,14 +5,14 @@ import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import { saveToken } from "../../utils/auth";
 import { AuthResponse } from "../../types";
+import { buttonStyles } from "../../utils/buttonStyles";
 
 interface LoginProps {
 
 }
 
 const Login = () => {
-
-    const kurwa = (a: string, b: string) => null;
+    const fake = (a: string, b: string) => null;
 
     return (
         <BaseAuth>
@@ -24,7 +24,7 @@ const Login = () => {
                     touched="touched"
                     value="krzych.pierzchala@gmail.com"
                     valid={true}
-                    onChange={kurwa}
+                    onChange={fake}
                     onBlur={() => null}
                     required={true}
                 // onChange={this.inputChangeHandler}
@@ -40,7 +40,7 @@ const Login = () => {
                     touched="touched"
                     value="Krzych"
                     valid={true}
-                    onChange={kurwa}
+                    onChange={fake}
                     onBlur={() => null}
                     required={true}
                 // onChange={this.inputChangeHandler}
@@ -49,7 +49,7 @@ const Login = () => {
                 // valid={this.state.loginForm['password'].valid}
                 // touched={this.state.loginForm['password'].touched}
                 />
-                <Button design="raised" loading={false} text="Login" disabled={false} />
+                <Button btnStyles={buttonStyles("raised")} text="Login" />
             </Form>
         </BaseAuth >
     );

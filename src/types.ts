@@ -29,7 +29,6 @@ export type User = {
     _id: UserId;
     name: string;
     email: string;
-    password: string;
 };
 
 export type Params = "postId" | "userId";
