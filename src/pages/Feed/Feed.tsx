@@ -4,6 +4,7 @@ import Paginator from '../../components/Paginator/Paginator';
 import Post from '../../components/Post/Post';
 import { PostsResponse } from '../../types';
 import { retrieveToken } from '../../utils/auth';
+import { buttonStyles } from '../../utils/buttonStyles';
 import "./Feed.css";
 
 interface FeedProps {
@@ -13,12 +14,13 @@ interface FeedProps {
 const Feed = () => {
     const data = useLoaderData() as Awaited<PostsResponse>;
 
-
-    console.log("🚀 ~ file: Feed.tsx:9 ~ Feed ~ data:", data);
     return (
         <>
             <section className="feed__control">
-                <Button mode="raised" design="accent" /*onClick={null}*/ text="New Post" disabled={false} loading={false} />
+                {/* <BaseButton mode="raised" design="accent">
+                    <button>New Post</button>
+                </BaseButton> */}
+                <Button btnStyles={buttonStyles("accent", "raised")} /*onClick={null}*/ text="New Post" />
             </section>
             <section className="feed">
                 {/* {this.state.postsLoading && (
@@ -72,8 +74,5 @@ export async function loader() {
         throw json({}, { status: 500, statusText: 'No response from the server' });
     }
 
-    const data = await response.json();
-    // console.log("🚀 ~ file: Feed.tsx:23 ~ loader ~ data:", data);
-
-    return data;
+    return await response.json();
 }

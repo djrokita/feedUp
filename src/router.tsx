@@ -7,7 +7,7 @@ import App, { loader as tokenLoader } from './App';
 import Feed, { loader as postsLoader } from "./pages/Feed/Feed";
 import Login, { action, action as loginAction } from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
-import SinglePost from "./pages/SinglePost";
+import SinglePost, { loader as postLoader } from "./pages/SinglePost/SinglePost";
 import User from "./pages/User";
 import Error from "./pages/Error";
 
@@ -44,7 +44,8 @@ function RootRouter() {
       },
       {
         path: '/:postId',
-        element: <SinglePost />
+        element: <SinglePost />,
+        loader: postLoader
       }
     ]
   }]);

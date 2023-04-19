@@ -1,34 +1,24 @@
-import classNames from 'classnames'
-
 import './Button.css';
 
 type ButtonProps = {
-  design: string;
-  mode?: string;
-  disabled: boolean;
-  loading: boolean;
+  btnStyles: string;
   text: string;
+  disabled?: boolean;
+  loading?: boolean;
   // type: React.ButtonHTMLAttributes<HTMLButtonElement>;
   // onClick: () => null;
-}
+};
 
 function Button(props: ButtonProps) {
-
-  const className = classNames('button',
-    `button--${props.design}`, {
-    [`button--${props.mode}`]: props.mode
-  }
-  )
-
   return <button
-    className={className}
+    className={props.btnStyles}
     // onClick={props.onClick}
     disabled={props.disabled || props.loading}
     // type={props.type}
     type="submit"
   >
     {props.loading ? 'Loading...' : props.text}
-  </button>
+  </button>;
 
   // <Link
   //   className={[

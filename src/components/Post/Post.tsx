@@ -1,4 +1,7 @@
+import { Link } from 'react-router-dom';
+
 import { TPost, User } from '../../types';
+import { buttonStyles } from '../../utils/buttonStyles';
 import Button from '../Button/Button';
 import Image from '../Image/Image';
 import './Post.css';
@@ -21,11 +24,11 @@ function Post(props: PostProps) {
         </h3>
         <h1 className="post__title">{props.title}</h1>
       </header>
-      {/* <div className="post__actions">
-        <Button mode="flat" link={props.id} text="View" />
-        <Button mode="flat" onClick={props.onStartEdit} text="Edit" />
-        <Button mode="flat" design="danger" onClick={props.onDelete} text="Delete" />
-      </div> */}
+      <div className="post__actions">
+        <Link className={buttonStyles(null, "flat")} to={props.id}>View</Link>
+        {/* <Button mode="flat" onClick={props.onStartEdit} text="Edit" />
+        <Button mode="flat" design="danger" onClick={props.onDelete} text="Delete" /> */}
+      </div>
     </article>
   );
 }

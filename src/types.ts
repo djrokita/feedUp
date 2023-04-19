@@ -6,6 +6,11 @@ export type AuthResponse = {
     userId: UserId;
 };
 
+export type PostResponse = {
+    post: TPost;
+    message: string;
+};
+
 export type PostsResponse = {
     posts: Array<TPost>;
     totalItems: number;
@@ -26,3 +31,5 @@ export type User = {
     email: string;
     password: string;
 };
+
+export type Params = "postId" | "userId";
