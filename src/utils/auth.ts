@@ -7,3 +7,7 @@ export function saveToken(token: AuthToken) {
 export function retrieveToken() {
     return localStorage.getItem('token');
 }
+
+export function checkIsAuth() {
+    return retrieveToken() ? true : false;
+}

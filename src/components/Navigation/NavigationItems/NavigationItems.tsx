@@ -1,36 +1,35 @@
-// import { NavLink } from 'react-router-dom';
+import { NavLink, useRouteLoaderData } from 'react-router-dom';
 
 import './NavigationItems.css';
 
 const navItems = [
   { id: 'feed', text: 'Feed', link: '/', auth: true },
   { id: 'login', text: 'Login', link: '/', auth: false },
-  { id: 'signup', text: 'Signup', link: '/signup', auth: false }
+  { id: 'signup', text: 'Signup', link: '/signup', auth: false },
+  { id: 'logout', text: 'Logout', link: '/logout', auth: true }
 ];
 
 type NavigationItemsProps = {
-  isAuth: boolean;
   onLogout(): void;
   // mobile: boolean;
-}
+};
 
-const NavigationItems = (props: NavigationItemsProps) => [
-  ...navItems.filter(item => item.auth === props.isAuth).map(item => (
-    <li
-      key={item.id}
-      // className={['navigation-item', props.mobile ? 'mobile' : ''].join(' ')}
+function NavigationItems(props: NavigationItemsProps) {
+  const isAuth = useRouteLoaderData('root');
+
+  return [
+    ...navItems.filter(item => item.auth === isAuth).map(item => (
+      <li
+        key={item.id}
+        // className={['navigation-item', props.mobile ? 'mobile' : ''].join(' ')}
+        className='navigation-item'
       >
-      {item.text}
-      {/* <NavLink to={item.link} exact onClick={props.onChoose}>
-        {item.text}
-      </NavLink> */}
-    </li>
-  )),
-  props.isAuth && (
-    <li className="navigation-item" key="logout">
-      <button onClick={props.onLogout}>Logout</button>
-    </li>
-  )
-];
+        <NavLink to={item.link}>
+          {item.text}
+        </NavLink>
+      </li>
+    )),
+  ];
+}
 
 export default NavigationItems;

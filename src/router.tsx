@@ -17,7 +17,7 @@ function RootRouter() {
     element: <App />,
     errorElement: <Error />,
     id: 'root',
-    // loader: tokenLoader,
+    loader: tokenLoader,
     children: [
       {
         index: true,

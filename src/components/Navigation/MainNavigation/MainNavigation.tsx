@@ -1,4 +1,4 @@
-// import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 // import MobileToggle from '../MobileToggle/MobileToggle';
 import Logo from '../../Logo/Logo';
@@ -9,20 +9,20 @@ import './MainNavigation.css';
 type MainNavigationProps = {
   isAuth: boolean;
   onLogout(): void;
-}
+};
 
 const MainNavigation = (props: MainNavigationProps) => (
   <nav className="main-nav">
     {/* <MobileToggle onOpen={props.onOpenMobileNav} /> */}
     <div className="main-nav__logo">
-      {/* <NavLink to="/"> */}
+      <NavLink to="/">
         <Logo />
-      {/* </NavLink> */}
+      </NavLink>
     </div>
     <div className="spacer" />
-    {/* <ul className="main-nav__items">
-      <NavigationItems isAuth={props.isAuth} onLogout={props.onLogout} />
-    </ul> */}
+    <ul className="main-nav__items">
+      <NavigationItems onLogout={props.onLogout} />
+    </ul>
   </nav>
 );
 

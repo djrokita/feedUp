@@ -12,7 +12,7 @@ import MainNavigation from './components/Navigation/MainNavigation/MainNavigatio
 // import LoginPage from './pages/Auth/Login';
 // import SignupPage from './pages/Auth/Signup';
 import { Outlet } from 'react-router-dom';
-import { retrieveToken } from './utils/auth';
+import { checkIsAuth, retrieveToken } from './utils/auth';
 
 class App extends Component {
   state = {
@@ -182,7 +182,7 @@ class App extends Component {
 export default App;
 
 export function loader() {
-  return retrieveToken();
+  return checkIsAuth();
 
   // return null;
 }
