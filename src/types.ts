@@ -21,8 +21,8 @@ export type TPost = {
     title: string;
     imageUrl: string;
     content: string;
-    creator: User;
-    createdAt: number;
+    creator: Partial<User>;
+    createdAt: string;
 };
 
 export type User = {
