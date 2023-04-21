@@ -1,11 +1,11 @@
 import { Form, redirect } from "react-router-dom";
-import { ChangeEvent, useReducer, ReducerWithoutAction } from 'react';
+import { ChangeEvent, useReducer, useEffect, useState } from 'react';
 
 import BaseAuth from "./BaseAuth/BaseAuth";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import { saveToken } from "../../utils/auth";
-import { Action, Actions, AuthResponse, BlurAction, INPUT_ACTIONS, ValueAction } from "../../types";
+import { Actions, AuthResponse, BlurAction, INPUT_ACTIONS, ValueAction } from "../../types";
 import { buttonStyles } from "../../utils/buttonStyles";
 import { email, length, required } from '../../utils/validators';
 
@@ -13,11 +13,6 @@ const initState = {
     value: '',
     valid: false,
     touched: false,
-};
-
-type ActionPayload = {
-    value: string;
-    valid: boolean;
 };
 
 //   formIsValid: false
@@ -42,11 +37,17 @@ function inputReducer<T extends Actions>(state: typeof initState, action: T) {
     }
 }
 
-
-
 const Login = () => {
+    const [isFormValid, setFormValid] = useState(false);
     const [emailState, dispatchEmail] = useReducer(inputReducer, initState);
     const [passwordState, dispatchPassword] = useReducer(inputReducer, initState);
+
+    useEffect(() => {
+        const isValid = emailState.valid && passwordState.valid;
+
+        setFormValid(isValid);
+
+    }, [emailState.valid, passwordState.valid]);
 
     const changeHandler = (id: "email" | "password", e: ChangeEvent<HTMLInputElement>) => {
         const action = { type: INPUT_ACTIONS.VALUE, payload: e.target.value, id };
@@ -84,7 +85,7 @@ const Login = () => {
                     onBlur={blurHandler.bind(null, "password")}
                     required={true}
                 />
-                <Button btnStyles={buttonStyles("raised")} text="Login" />
+                <Button btnStyles={buttonStyles("raised")} text="Login" disabled={!isFormValid} />
             </Form>
         </BaseAuth >
     );
