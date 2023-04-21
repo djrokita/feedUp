@@ -31,4 +31,36 @@ export type User = {
     email: string;
 };
 
+export type ActionPayload = {
+    value: string;
+    valid: boolean;
+};
+
+export type Action<T extends string> = {
+    type: T;
+    payload: string | boolean;
+};
+
 export type Params = "postId" | "userId";
+
+export enum INPUT_ACTIONS {
+    VALUE = "value",
+    // VALID = "valid",
+    TOUCH = "touch"
+}
+
+export type BaseAction = {
+    id: 'email' | 'password';
+};
+
+export type ValueAction = BaseAction & {
+    type: INPUT_ACTIONS.VALUE;
+    payload: string;
+};
+
+export type BlurAction = BaseAction & {
+    type: INPUT_ACTIONS.TOUCH;
+    payload: boolean;
+};
+
+export type Actions = ValueAction | BlurAction;

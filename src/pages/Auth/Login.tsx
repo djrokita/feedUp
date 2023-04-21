@@ -1,53 +1,88 @@
 import { Form, redirect } from "react-router-dom";
+import { ChangeEvent, useReducer, ReducerWithoutAction } from 'react';
 
 import BaseAuth from "./BaseAuth/BaseAuth";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import { saveToken } from "../../utils/auth";
-import { AuthResponse } from "../../types";
+import { Action, Actions, AuthResponse, BlurAction, INPUT_ACTIONS, ValueAction } from "../../types";
 import { buttonStyles } from "../../utils/buttonStyles";
+import { email, length, required } from '../../utils/validators';
 
-interface LoginProps {
+const initState = {
+    value: '',
+    valid: false,
+    touched: false,
+};
 
+type ActionPayload = {
+    value: string;
+    valid: boolean;
+};
+
+//   formIsValid: false
+
+function validateEmail(value: string) {
+    return required(value) && email(value);
 }
 
+function validatePassword(value: string) {
+    return required(value) && length({ min: 5 })(value);
+}
+
+function inputReducer<T extends Actions>(state: typeof initState, action: T) {
+    switch (action.type) {
+        case INPUT_ACTIONS.VALUE:
+            const validator = action.id === "email" ? validateEmail : validatePassword;
+            return { ...state, value: action.payload, valid: validator(action.payload) };
+        case INPUT_ACTIONS.TOUCH:
+            return { ...state, touched: action.payload };
+        default:
+            throw new Error('Wrong action type');
+    }
+}
+
+
+
 const Login = () => {
-    const fake = (a: string, b: string) => null;
+    const [emailState, dispatchEmail] = useReducer(inputReducer, initState);
+    const [passwordState, dispatchPassword] = useReducer(inputReducer, initState);
+
+    const changeHandler = (id: "email" | "password", e: ChangeEvent<HTMLInputElement>) => {
+        const action = { type: INPUT_ACTIONS.VALUE, payload: e.target.value, id };
+        id === "email" ? dispatchEmail(action as ValueAction) : dispatchPassword(action as ValueAction);
+    };
+
+
+    const blurHandler = (id: "email" | "password") => {
+        const action = { type: INPUT_ACTIONS.TOUCH, payload: true, id };
+        id === "email" ? dispatchEmail(action as BlurAction) : dispatchPassword(action as BlurAction);
+    };
 
     return (
         <BaseAuth>
             <Form method="POST">
-                <Input
+                <Input<"email">
                     id="email"
                     label="Your E-Mail"
                     type="email"
-                    touched="touched"
-                    value="krzych.pierzchala@gmail.com"
-                    valid={true}
-                    onChange={fake}
-                    onBlur={() => null}
+                    touched={emailState.touched}
+                    value={emailState.value}
+                    valid={emailState.valid}
                     required={true}
-                // onChange={this.inputChangeHandler}
-                // onBlur={this.inputBlurHandler.bind(this, 'email')}
-                // value={this.state.loginForm['email'].value}
-                // valid={this.state.loginForm['email'].valid}
-                // touched={this.state.loginForm['email'].touched}
+                    onChange={changeHandler.bind(null, "email")}
+                    onBlur={blurHandler.bind(null, "email")}
                 />
                 <Input
                     id="password"
                     label="Password"
                     type="password"
-                    touched="touched"
-                    value="Krzych"
-                    valid={true}
-                    onChange={fake}
-                    onBlur={() => null}
+                    touched={passwordState.touched}
+                    value={passwordState.value}
+                    valid={passwordState.valid}
+                    onChange={changeHandler.bind(null, "password")}
+                    onBlur={blurHandler.bind(null, "password")}
                     required={true}
-                // onChange={this.inputChangeHandler}
-                // onBlur={this.inputBlurHandler.bind(this, 'password')}
-                // value={this.state.loginForm['password'].value}
-                // valid={this.state.loginForm['password'].valid}
-                // touched={this.state.loginForm['password'].touched}
                 />
                 <Button btnStyles={buttonStyles("raised")} text="Login" />
             </Form>
