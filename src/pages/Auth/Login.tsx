@@ -1,4 +1,4 @@
-import { Form, redirect } from "react-router-dom";
+import { Form, redirect, useNavigation } from "react-router-dom";
 import { ChangeEvent, useReducer, useEffect, useState } from 'react';
 
 import BaseAuth from "./BaseAuth/BaseAuth";
@@ -41,6 +41,9 @@ const Login = () => {
     const [isFormValid, setFormValid] = useState(false);
     const [emailState, dispatchEmail] = useReducer(inputReducer, initState);
     const [passwordState, dispatchPassword] = useReducer(inputReducer, initState);
+    const navigation = useNavigation();
+
+    const loading = navigation.state === "submitting" || navigation.state === "loading";
 
     useEffect(() => {
         const isValid = emailState.valid && passwordState.valid;
@@ -85,7 +88,7 @@ const Login = () => {
                     onBlur={blurHandler.bind(null, "password")}
                     required={true}
                 />
-                <Button btnStyles={buttonStyles("raised")} text="Login" disabled={!isFormValid} />
+                <Button btnStyles={buttonStyles("raised")} text="Login" disabled={!isFormValid} loading={loading} />
             </Form>
         </BaseAuth >
     );
