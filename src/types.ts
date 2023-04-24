@@ -50,7 +50,7 @@ export enum INPUT_ACTIONS {
 }
 
 export type BaseAction = {
-    id: 'email' | 'password';
+    id: 'email' | 'password' | 'title' | 'content';
 };
 
 export type ValueAction = BaseAction & {

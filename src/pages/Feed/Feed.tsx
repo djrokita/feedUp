@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { useLoaderData, json, redirect } from 'react-router-dom';
+
 import Button from '../../components/Button/Button';
+import FeedEdit from '../../components/FeedModal/FeedEdit';
 import Paginator from '../../components/Paginator/Paginator';
 import Post from '../../components/Post/Post';
 import { PostsResponse } from '../../types';
 import { retrieveToken } from '../../utils/auth';
 import { buttonStyles } from '../../utils/buttonStyles';
+
 import "./Feed.css";
 
 interface FeedProps {
@@ -13,14 +17,32 @@ interface FeedProps {
 
 const Feed = () => {
     const data = useLoaderData() as Awaited<PostsResponse>;
+    const [isModal, setModal] = useState(false);
+
+    const openModalHandler = () => {
+        console.log('OPEN-MODAL');
+        setModal(true);
+    };
+    const cancelHandler = () => {
+        console.log('CLOSE-MODAL');
+        setModal(false);
+    };
+    const finishHandler = () => null;
 
     return (
         <>
+            <FeedEdit
+                editing={isModal}
+                selectedPost={null}
+                // loading={false}
+                onCancelEdit={cancelHandler}
+            // onFinishEdit={finishHandler}
+            />
             <section className="feed__control">
                 {/* <BaseButton mode="raised" design="accent">
                     <button>New Post</button>
                 </BaseButton> */}
-                <Button btnStyles={buttonStyles("accent", "raised")} /*onClick={null}*/ text="New Post" />
+                <Button btnStyles={buttonStyles("accent", "raised")} onClick={openModalHandler} text="New Post" />
             </section>
             <section className="feed">
                 {/* {this.state.postsLoading && (
