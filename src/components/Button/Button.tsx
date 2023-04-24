@@ -6,13 +6,13 @@ type ButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   // type: React.ButtonHTMLAttributes<HTMLButtonElement>;
-  // onClick: () => null;
+  onClick?: (val: any) => void;
 };
 
 function Button(props: ButtonProps) {
   return <button
     className={props.btnStyles}
-    // onClick={props.onClick}
+    onClick={props.onClick}
     disabled={props.disabled || props.loading}
     // type={props.type}
     type="submit"

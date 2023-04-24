@@ -1,43 +1,23 @@
 import { Form, redirect, useNavigation } from "react-router-dom";
-import { ChangeEvent, useReducer, useEffect, useState } from 'react';
 
 import BaseAuth from "./BaseAuth/BaseAuth";
-import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import { saveToken } from "../../utils/auth";
-import { Actions, AuthResponse, BlurAction, INPUT_ACTIONS, ValueAction } from "../../types";
+import { AuthResponse } from "../../types";
 import { buttonStyles } from "../../utils/buttonStyles";
 import { email, length, required } from '../../utils/validators';
-import { initState, inputReducer, validateEmail, validatePassword } from '../../hooks/inputReducer';
-import TextField from "../../components/TextField/Input";
+import TextField from "../../components/TextField/TextField";
+import { useInput } from '../../hooks/useInput';
+import { useFormValidation } from '../../hooks/useFormValidation';
 
 const Login = () => {
-    const [isFormValid, setFormValid] = useState(false);
-    const [emailState, dispatchEmail] = useReducer(inputReducer, initState);
-    const [passwordState, dispatchPassword] = useReducer(inputReducer, initState);
+    const { input: emailState, changeHandler: onEmailChange, blurHandler: onEmailBlur } = useInput([required, email]);
+    const { input: passwordState, changeHandler: onPasswordChange, blurHandler: onPasswordBlur } = useInput([required, length({ min: 5 })]);
     const navigation = useNavigation();
 
     const loading = navigation.state === "submitting" || navigation.state === "loading";
 
-    useEffect(() => {
-        const isValid = emailState.valid && passwordState.valid;
-
-        setFormValid(isValid);
-
-    }, [emailState.valid, passwordState.valid]);
-
-    const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        const { value, id } = e.target;
-        const action = { type: INPUT_ACTIONS.VALUE, payload: value, id };
-        id === "email" ? dispatchEmail(action as ValueAction) : dispatchPassword(action as ValueAction);
-    };
-
-
-    const blurHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        const { id } = e.target;
-        const action = { type: INPUT_ACTIONS.TOUCH, payload: true, id };
-        id === "email" ? dispatchEmail(action as BlurAction) : dispatchPassword(action as BlurAction);
-    };
+    const isFormValid = useFormValidation([emailState.valid, passwordState.valid]);
 
     return (
         <BaseAuth>
@@ -49,20 +29,20 @@ const Login = () => {
                         name="email"
                         value={emailState.value}
                         required={true}
-                        onChange={changeHandler}
-                        onBlur={blurHandler}
+                        onChange={onEmailChange}
+                        onBlur={onEmailBlur}
 
                     />
                 </TextField>
-                <TextField id="password" label="Password" valid={emailState.valid} touched={emailState.touched}>
+                <TextField id="password" label="Password" valid={passwordState.valid} touched={passwordState.touched}>
                     <input
                         id="password"
                         type="password"
                         name="password"
                         value={passwordState.value}
                         required={true}
-                        onChange={changeHandler}
-                        onBlur={blurHandler}
+                        onChange={onPasswordChange}
+                        onBlur={onPasswordBlur}
 
                     />
                 </TextField>
@@ -81,7 +61,6 @@ export async function action({ request }: { request: Request; }) {
         email: formData.get('email'),
         password: formData.get('password'),
     };
-    console.log("🚀 ~ file: Login.tsx:66 ~ action ~ body:", body);
 
     const url = 'http://localhost:8080/auth/login';
 
