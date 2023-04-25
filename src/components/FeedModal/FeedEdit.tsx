@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import Backdrop from '../Backdrop/Backdrop';
 import Modal from '../Modal/Modal';
 import TextField from '../TextField/TextField';
@@ -6,8 +8,9 @@ import Image from '../Image/Image';
 import { required, length } from '../../utils/validators';
 import { useInput } from '../../hooks/useInput';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { ChangeEvent } from 'react';
 
-// import { generateBase64FromImage } from '../../../util/image';
+import { generateBase64FromImage } from '../../utils/image';
 
 const POST_FORM = {
   // title: {
@@ -43,13 +46,29 @@ type FeedEditProps = {
 // };
 
 function FeedEdit(props: FeedEditProps) {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur } = useInput([required, length({ min: 5 })]);
   const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur } = useInput([required, length({ min: 5 })]);
+  const { input: imageState, changeHandler: onImageChange, blurHandler: onImageBlur } = useInput([required]);
 
   const formIsValid = useFormValidation([titleState.valid, contentState.valid]);
 
   const cancelPostChangeHandler = () => props.onCancelEdit();
   const acceptPostChangeHandler = () => console.log('state-change');
+
+  const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      generateBase64FromImage(e.target.files[0])
+        .then((b64: string) => {
+          setImagePreview(b64);
+        })
+        .catch(e => {
+          setImagePreview(null);
+        });
+
+      onImageChange(e);
+    }
+  };
 
   return props.editing ? (
     <>
@@ -76,6 +95,17 @@ function FeedEdit(props: FeedEditProps) {
             />
 
           </TextField>
+          <TextField
+            id="image"
+            label="Image"
+            valid={imageState.valid}
+            touched={imageState.touched}>
+            <input
+              type="file"
+              onChange={fileHandler}
+              onBlur={onImageBlur}
+            />
+          </TextField>
           {/* <FilePicker
               id="image"
               label="Image"
@@ -85,12 +115,12 @@ function FeedEdit(props: FeedEditProps) {
               valid={this.state.postForm['image'].valid}
               touched={this.state.postForm['image'].touched}
             /> */}
-          {/* <div className="new-post__preview-image">
-            {!this.state.imagePreview && <p>Please choose an image.</p>}
-            {this.state.imagePreview && (
-              <Image imageUrl={this.state.imagePreview} contain left />
+          <div className="new-post__preview-image">
+            {!imagePreview && <p>Please choose an image.</p>}
+            {imagePreview && (
+              <Image imageUrl={imagePreview} contain left />
             )}
-          </div> */}
+          </div>
           <TextField
             id="content"
             label="Content"
@@ -171,20 +201,6 @@ export default FeedEdit;
   //     return {
   //       postForm: updatedForm,
   //       formIsValid: formIsValid
-  //     };
-  //   });
-  // };
-
-  // inputBlurHandler = input => {
-  //   this.setState(prevState => {
-  //     return {
-  //       postForm: {
-  //         ...prevState.postForm,
-  //         [input]: {
-  //           ...prevState.postForm[input],
-  //           touched: true
-  //         }
-  //       }
   //     };
   //   });
   // };
