@@ -46,8 +46,8 @@ export type Params = "postId" | "userId";
 export enum INPUT_ACTIONS {
     VALUE = "value",
     TOUCH = "touch",
-    FILE = "file"
-    // VALID = "valid",
+    FILE = "file",
+    RESET = "reset"
 }
 
 export type ValueAction = {
@@ -59,13 +59,17 @@ export type BlurAction = {
     type: INPUT_ACTIONS.TOUCH;
 };
 
+export type ResetAction = {
+    type: INPUT_ACTIONS.RESET;
+};
+
 export type FileAction = {
     type: INPUT_ACTIONS.FILE;
     payload: File;
 };
 
-export type Actions = ValueAction | BlurAction;
-export type FileActions = ValueAction | BlurAction | FileAction;
+export type Actions = ValueAction | BlurAction | ResetAction;
+export type FileActions = Actions | FileAction;
 
 export type State = {
     value: string;

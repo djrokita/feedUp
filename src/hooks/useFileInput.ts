@@ -4,13 +4,14 @@ import { BlurAction, FileAction, FileActions, FileState, INPUT_ACTIONS, ValueAct
 
 type Validator = (value: string) => boolean;
 
+export const initState: FileState = {
+    value: '',
+    file: null,
+    valid: false,
+    touched: false,
+};
+
 export function useFileInput(validaors: Validator[]) {
-    const initState: FileState = {
-        value: '',
-        file: null,
-        valid: false,
-        touched: false,
-    };
 
     function inputReducer<T extends FileActions>(state: FileState, action: T) {
         switch (action.type) {
@@ -21,6 +22,8 @@ export function useFileInput(validaors: Validator[]) {
                 return { ...state, touched: true };
             case INPUT_ACTIONS.FILE:
                 return { ...state, file: action.payload };
+            case INPUT_ACTIONS.RESET:
+                return initState;
             default:
                 throw new Error('Wrong action type');
         }
@@ -40,13 +43,14 @@ export function useFileInput(validaors: Validator[]) {
 
 
     const blurHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        const action = { type: INPUT_ACTIONS.TOUCH, payload: true };
+        const action = { type: INPUT_ACTIONS.TOUCH };
         dispatchInput(action as BlurAction);
     };
 
+    const resetHandler = () => dispatchInput({ type: INPUT_ACTIONS.RESET });
 
     return {
-        input, changeHandler, blurHandler
+        input, changeHandler, blurHandler, resetHandler
     };
 
 }

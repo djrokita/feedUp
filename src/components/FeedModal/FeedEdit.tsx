@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { Form, useSubmit } from 'react-router-dom';
 
 import Backdrop from '../Backdrop/Backdrop';
@@ -6,11 +6,9 @@ import Modal from '../Modal/Modal';
 import TextField from '../TextField/TextField';
 import Image from '../Image/Image';
 import { required, length } from '../../utils/validators';
-import { useInput } from '../../hooks/useInput';
-import { useFileInput } from '../../hooks/useFileInput';
+import { useInput, initState as initInputState } from '../../hooks/useInput';
+import { useFileInput, initState as initImageState } from '../../hooks/useFileInput';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { ChangeEvent } from 'react';
-
 import { generateBase64FromImage } from '../../utils/image';
 
 type FeedEditProps = {
@@ -21,13 +19,21 @@ type FeedEditProps = {
 
 function FeedEdit(props: FeedEditProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur } = useInput([required, length({ min: 5 })]);
-  const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur } = useInput([required, length({ min: 5 })]);
-  const { input: imageState, changeHandler: onImageChange, blurHandler: onImageBlur } = useFileInput([required]);
+  const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur, resetHandler: titleReset } = useInput([required, length({ min: 5 })]);
+  const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur, resetHandler: contentReset } = useInput([required, length({ min: 5 })]);
+  const { input: imageState, changeHandler: onImageChange, blurHandler: onImageBlur, resetHandler: imageReset } = useFileInput([required]);
+
+  useEffect(() => {
+    if (props.editing) {
+      titleReset();
+      contentReset();
+      imageReset();
+      setImagePreview(null);
+    }
+  }, [props.editing]);
 
   const submit = useSubmit();
   const formElement = useRef<HTMLFormElement | null>(null);
-
   const formIsValid = useFormValidation([titleState.valid, contentState.valid]);
 
   const cancelPostChangeHandler = () => props.onCancelEdit();
