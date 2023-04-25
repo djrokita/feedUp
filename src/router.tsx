@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 
 import RootLayout, { loader as authLoader } from "./pages/Root/Root";
-import Feed, { loader as postsLoader } from "./pages/Feed/Feed";
+import Feed, { loader as postsLoader, action as postAction } from "./pages/Feed/Feed";
 import Login, { action as loginAction } from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import SinglePost, { loader as postLoader } from "./pages/SinglePost/SinglePost";
@@ -24,6 +24,7 @@ function RootRouter() {
         index: true,
         element: <Feed />,
         loader: postsLoader,
+        action: postAction
       },
       {
         path: '/auth',

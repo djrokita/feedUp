@@ -45,22 +45,34 @@ export type Params = "postId" | "userId";
 
 export enum INPUT_ACTIONS {
     VALUE = "value",
+    TOUCH = "touch",
+    FILE = "file"
     // VALID = "valid",
-    TOUCH = "touch"
 }
 
-export type BaseAction = {
-    id: 'email' | 'password' | 'title' | 'content';
-};
-
-export type ValueAction = BaseAction & {
+export type ValueAction = {
     type: INPUT_ACTIONS.VALUE;
     payload: string;
 };
 
-export type BlurAction = BaseAction & {
+export type BlurAction = {
     type: INPUT_ACTIONS.TOUCH;
-    payload: boolean;
+};
+
+export type FileAction = {
+    type: INPUT_ACTIONS.FILE;
+    payload: File;
 };
 
 export type Actions = ValueAction | BlurAction;
+export type FileActions = ValueAction | BlurAction | FileAction;
+
+export type State = {
+    value: string;
+    valid: boolean;
+    touched: boolean;
+};
+
+export type FileState = State & {
+    file: File | null;
+};

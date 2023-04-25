@@ -98,3 +98,36 @@ export async function loader() {
 
     return await response.json();
 }
+
+export async function action({ request }: { request: Request; }) {
+    const token = retrieveToken();
+
+    if (!token) {
+        return redirect('/auth');
+    }
+
+    const formData = await request.formData();
+
+    const url = 'http://localhost:8080/feed/post';
+    const response = await fetch(url, {
+        method: request.method,
+        headers: {
+            Authentication: 'Bearer ' + token,
+        },
+        body: formData,
+    });
+
+    if (response.status === 422) {
+        return response;
+    }
+
+    // if (res.status !== 200 && res.status !== 201) {
+    //     throw new Error('Creating or editing a post failed!');
+    // }
+
+    if (!response.ok) {
+        throw response;
+    }
+
+    return redirect('/');
+}

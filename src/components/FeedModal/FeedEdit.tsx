@@ -1,37 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Form, useSubmit } from 'react-router-dom';
 
 import Backdrop from '../Backdrop/Backdrop';
 import Modal from '../Modal/Modal';
 import TextField from '../TextField/TextField';
-// import FilePicker from '../../Form/Input/FilePicker';
 import Image from '../Image/Image';
 import { required, length } from '../../utils/validators';
 import { useInput } from '../../hooks/useInput';
+import { useFileInput } from '../../hooks/useFileInput';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { ChangeEvent } from 'react';
 
 import { generateBase64FromImage } from '../../utils/image';
-
-const POST_FORM = {
-  // title: {
-  //   value: '',
-  //   valid: false,
-  //   touched: false,
-  //   validators: [required, length({ min: 5 })]
-  // },
-  image: {
-    value: '',
-    valid: false,
-    touched: false,
-    validators: [required]
-  },
-  // content: {
-  //   value: '',
-  //   valid: false,
-  //   touched: false,
-  //   validators: [required, length({ min: 5 })]
-  // }
-};
 
 type FeedEditProps = {
   editing: boolean;
@@ -39,22 +19,27 @@ type FeedEditProps = {
   onCancelEdit: () => void;
 };
 
-// state = {
-//   postForm: POST_FORM,
-//   formIsValid: false,
-//   imagePreview: null
-// };
-
 function FeedEdit(props: FeedEditProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur } = useInput([required, length({ min: 5 })]);
   const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur } = useInput([required, length({ min: 5 })]);
-  const { input: imageState, changeHandler: onImageChange, blurHandler: onImageBlur } = useInput([required]);
+  const { input: imageState, changeHandler: onImageChange, blurHandler: onImageBlur } = useFileInput([required]);
+
+  const submit = useSubmit();
+  const formElement = useRef<HTMLFormElement | null>(null);
 
   const formIsValid = useFormValidation([titleState.valid, contentState.valid]);
 
   const cancelPostChangeHandler = () => props.onCancelEdit();
-  const acceptPostChangeHandler = () => console.log('state-change');
+  const acceptPostChangeHandler = () => {
+    if (formElement.current instanceof HTMLFormElement) {
+      submit(formElement.current, {
+        method: "POST"
+      });
+
+      props.onCancelEdit();
+    };
+  };
 
   const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -80,7 +65,7 @@ function FeedEdit(props: FeedEditProps) {
         onAccept={acceptPostChangeHandler}
         isLoading={false}
       >
-        <form>
+        <Form ref={formElement} encType="multipart/form-data">
           <TextField
             id="title"
             label="Title"
@@ -88,6 +73,7 @@ function FeedEdit(props: FeedEditProps) {
             touched={titleState.touched}>
             <input
               type="text"
+              name="title"
               required={true}
               onChange={onTitleChange}
               onBlur={onTitleBlur}
@@ -102,19 +88,11 @@ function FeedEdit(props: FeedEditProps) {
             touched={imageState.touched}>
             <input
               type="file"
+              name="image"
               onChange={fileHandler}
               onBlur={onImageBlur}
             />
           </TextField>
-          {/* <FilePicker
-              id="image"
-              label="Image"
-              control="input"
-              onChange={this.postInputChangeHandler}
-              onBlur={this.inputBlurHandler.bind(this, 'image')}
-              valid={this.state.postForm['image'].valid}
-              touched={this.state.postForm['image'].touched}
-            /> */}
           <div className="new-post__preview-image">
             {!imagePreview && <p>Please choose an image.</p>}
             {imagePreview && (
@@ -129,16 +107,16 @@ function FeedEdit(props: FeedEditProps) {
           >
             <textarea
               rows={5}
+              name="content"
               onChange={onContentChange}
               onBlur={onContentBlur}
               value={contentState.value}
             />
           </TextField>
-        </form>
+        </Form>
       </Modal>
     </>
   ) : null;
-  // }
 }
 
 export default FeedEdit;
@@ -202,27 +180,5 @@ export default FeedEdit;
   //       postForm: updatedForm,
   //       formIsValid: formIsValid
   //     };
-  //   });
-  // };
-
-  // cancelPostChangeHandler = () => {
-  //   this.setState({
-  //     postForm: POST_FORM,
-  //     formIsValid: false
-  //   });
-  //   this.props.onCancelEdit();
-  // };
-
-  // acceptPostChangeHandler = () => {
-  //   const post = {
-  //     title: this.state.postForm.title.value,
-  //     image: this.state.postForm.image.value,
-  //     content: this.state.postForm.content.value
-  //   };
-  //   this.props.onFinishEdit(post);
-  //   this.setState({
-  //     postForm: POST_FORM,
-  //     formIsValid: false,
-  //     imagePreview: null
   //   });
   // };
