@@ -1,11 +1,11 @@
 import { useReducer } from 'react';
 
-import { initInputState, changeHandler, blurHandler, resetHandler, Actions, INPUT_ACTIONS, State } from './helpers';
+import { initInputState, changeHandler, blurHandler, resetHandler, uploadHandler, BaseInputActions, INPUT_ACTIONS, State } from './helpers';
 
 type Validator = (value: string) => boolean;
 
 export function useInput(validaors: Validator[]) {
-    function inputReducer<T extends Actions>(state: State, action: T) {
+    function inputReducer<T extends BaseInputActions>(state: State, action: T) {
         switch (action.type) {
             case INPUT_ACTIONS.VALUE:
                 const valid = validaors.every(validator => validator(action.payload));
@@ -25,6 +25,7 @@ export function useInput(validaors: Validator[]) {
         input,
         changeHandler: changeHandler.bind(null, dispatchInput),
         blurHandler: blurHandler.bind(null, dispatchInput),
+        uploadHandler: uploadHandler.bind(null, dispatchInput),
         resetHandler: resetHandler.bind(null, dispatchInput)
     };
 }

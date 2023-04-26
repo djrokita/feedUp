@@ -1,11 +1,11 @@
 import { useReducer } from 'react';
 
-import { initFileInputState, changeHandler, blurHandler, fileHandler, FileActions, FileState, INPUT_ACTIONS } from './helpers';
+import { initFileInputState, changeHandler, blurHandler, uploadHandler, fileHandler, FileState, INPUT_ACTIONS, Actions, previewHandler } from './helpers';
 
 type Validator = (value: string) => boolean;
 
 export function useFileInput(validaors: Validator[]) {
-    function inputReducer<T extends FileActions>(state: FileState, action: T) {
+    function inputReducer<T extends Actions>(state: FileState, action: T): FileState {
         switch (action.type) {
             case INPUT_ACTIONS.VALUE:
                 const valid = validaors.every(validator => validator(action.payload));
@@ -14,6 +14,8 @@ export function useFileInput(validaors: Validator[]) {
                 return { ...state, touched: true };
             case INPUT_ACTIONS.FILE:
                 return { ...state, file: action.payload };
+            case INPUT_ACTIONS.PREVIEW:
+                return { ...state, imagePreview: action.payload };
             case INPUT_ACTIONS.RESET:
                 return initFileInputState;
             default:
@@ -29,7 +31,8 @@ export function useFileInput(validaors: Validator[]) {
         changeHandler: changeHandler.bind(null, dispatchInput),
         blurHandler: blurHandler.bind(null, dispatchInput),
         fileHandler: fileHandler.bind(null, dispatchInput),
+        uploadHandler: uploadHandler.bind(null, dispatchInput),
+        previewHandler: previewHandler.bind(null, dispatchInput),
         resetHandler: resetHandler.bind(null, dispatchInput)
     };
-
 }

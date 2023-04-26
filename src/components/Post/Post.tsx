@@ -13,9 +13,13 @@ type PostProps = {
   content: string;
   image: string;
   author: string;
+  onStartEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
 function Post(props: PostProps) {
+  const fakeStart = () => console.log('editing started...');
+
   return (
     <article className="post">
       <header className="post__header">
@@ -26,8 +30,8 @@ function Post(props: PostProps) {
       </header>
       <div className="post__actions">
         <Link className={buttonStyles(null, "flat")} to={props.id}>View</Link>
-        {/* <Button mode="flat" onClick={props.onStartEdit} text="Edit" />
-        <Button mode="flat" design="danger" onClick={props.onDelete} text="Delete" /> */}
+        <Button btnStyles={buttonStyles(null, "flat")} onClick={props.onStartEdit} text="Edit" />
+        <Button btnStyles={buttonStyles("danger", "flat")} onClick={fakeStart} text="Delete" />
       </div>
     </article>
   );

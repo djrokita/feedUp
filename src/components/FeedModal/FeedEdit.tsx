@@ -9,62 +9,58 @@ import { required, length } from '../../utils/validators';
 import { useInput } from '../../hooks/useInput';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { generateBase64FromImage } from '../../utils/image';
+import { TPost } from '../../types';
 
 type FeedEditProps = {
   editing: boolean;
-  selectedPost: unknown;
+  selectedPost: TPost | null;
   onCancelEdit: () => void;
 };
 
-function FeedEdit(props: FeedEditProps) {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur, resetHandler: titleReset } = useInput([required, length({ min: 5 })]);
-  const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur, resetHandler: contentReset } = useInput([required, length({ min: 5 })]);
-  const { input: imageState, changeHandler: onImageChange, fileHandler, blurHandler: onImageBlur, resetHandler: imageReset } = useFileInput([required]);
+function FeedEdit({ editing, selectedPost, onCancelEdit }: FeedEditProps) {
+  const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur, uploadHandler: onTitleUpload, resetHandler: titleReset } = useInput([required, length({ min: 5 })]);
+  const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur, uploadHandler: onContentUpload, resetHandler: contentReset } = useInput([required, length({ min: 5 })]);
+  const { input: imageState, changeHandler: onImageChange, fileHandler, previewHandler, blurHandler: onImageBlur, resetHandler: imageReset } = useFileInput([required]);
 
   useEffect(() => {
-    if (props.editing) {
+    if (editing && selectedPost) {
+      onTitleUpload(selectedPost.title);
+      onContentUpload(selectedPost.content);
+    }
+
+    if (!editing) {
       titleReset();
       contentReset();
       imageReset();
-      setImagePreview(null);
     }
-  }, [props.editing]);
+  }, [editing]);
 
   const submit = useSubmit();
   const formElement = useRef<HTMLFormElement | null>(null);
   const formIsValid = useFormValidation([titleState.valid, contentState.valid, imageState.valid]);
 
-  const cancelPostChangeHandler = () => props.onCancelEdit();
+  const cancelPostChangeHandler = () => onCancelEdit();
   const acceptPostChangeHandler = () => {
     if (formElement.current instanceof HTMLFormElement) {
       submit(formElement.current, {
         method: "POST"
       });
 
-      props.onCancelEdit();
+      onCancelEdit();
     };
   };
 
-  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      generateBase64FromImage(e.target.files[0])
-        .then((b64: string) => {
-          setImagePreview(b64);
-        })
-        .catch(e => {
-          setImagePreview(null);
-        });
-
       onImageChange(e);
       fileHandler(e);
+      await previewHandler(e);
     }
   };
 
-  return props.editing ? (
+  return editing ? (
     <>
-      <Backdrop onClick={cancelPostChangeHandler} open={props.editing} />
+      <Backdrop onClick={cancelPostChangeHandler} open={editing} />
       <Modal
         title="New Post"
         acceptEnabled={formIsValid}
@@ -101,9 +97,9 @@ function FeedEdit(props: FeedEditProps) {
             />
           </TextField>
           <div className="new-post__preview-image">
-            {!imagePreview && <p>Please choose an image.</p>}
-            {imagePreview && (
-              <Image imageUrl={imagePreview} contain left />
+            {!imageState.imagePreview && <p>Please choose an image.</p>}
+            {imageState.imagePreview && (
+              <Image imageUrl={imageState.imagePreview} contain left />
             )}
           </div>
           <TextField
