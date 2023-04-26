@@ -6,8 +6,8 @@ import Modal from '../Modal/Modal';
 import TextField from '../TextField/TextField';
 import Image from '../Image/Image';
 import { required, length } from '../../utils/validators';
-import { useInput, initState as initInputState } from '../../hooks/useInput';
-import { useFileInput, initState as initImageState } from '../../hooks/useFileInput';
+import { useInput } from '../../hooks/useInput';
+import { useFileInput } from '../../hooks/useFileInput';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { generateBase64FromImage } from '../../utils/image';
 
@@ -21,7 +21,7 @@ function FeedEdit(props: FeedEditProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur, resetHandler: titleReset } = useInput([required, length({ min: 5 })]);
   const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur, resetHandler: contentReset } = useInput([required, length({ min: 5 })]);
-  const { input: imageState, changeHandler: onImageChange, blurHandler: onImageBlur, resetHandler: imageReset } = useFileInput([required]);
+  const { input: imageState, changeHandler: onImageChange, fileHandler, blurHandler: onImageBlur, resetHandler: imageReset } = useFileInput([required]);
 
   useEffect(() => {
     if (props.editing) {
@@ -34,7 +34,7 @@ function FeedEdit(props: FeedEditProps) {
 
   const submit = useSubmit();
   const formElement = useRef<HTMLFormElement | null>(null);
-  const formIsValid = useFormValidation([titleState.valid, contentState.valid]);
+  const formIsValid = useFormValidation([titleState.valid, contentState.valid, imageState.valid]);
 
   const cancelPostChangeHandler = () => props.onCancelEdit();
   const acceptPostChangeHandler = () => {
@@ -47,7 +47,7 @@ function FeedEdit(props: FeedEditProps) {
     };
   };
 
-  const fileHandler = (e: ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       generateBase64FromImage(e.target.files[0])
         .then((b64: string) => {
@@ -58,6 +58,7 @@ function FeedEdit(props: FeedEditProps) {
         });
 
       onImageChange(e);
+      fileHandler(e);
     }
   };
 
@@ -95,7 +96,7 @@ function FeedEdit(props: FeedEditProps) {
             <input
               type="file"
               name="image"
-              onChange={fileHandler}
+              onChange={onFileChange}
               onBlur={onImageBlur}
             />
           </TextField>

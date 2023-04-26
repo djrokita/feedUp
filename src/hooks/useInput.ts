@@ -1,15 +1,8 @@
-import { ChangeEvent, useReducer } from 'react';
+import { useReducer } from 'react';
 
-import { Actions, BlurAction, INPUT_ACTIONS, State, ValueAction } from "../types";
+import { initInputState, changeHandler, blurHandler, resetHandler, Actions, INPUT_ACTIONS, State } from './helpers';
 
 type Validator = (value: string) => boolean;
-type InputElement = HTMLInputElement | HTMLTextAreaElement;
-
-export const initState: State = {
-    value: '',
-    valid: false,
-    touched: false,
-};
 
 export function useInput(validaors: Validator[]) {
     function inputReducer<T extends Actions>(state: State, action: T) {
@@ -20,29 +13,18 @@ export function useInput(validaors: Validator[]) {
             case INPUT_ACTIONS.TOUCH:
                 return { ...state, touched: true };
             case INPUT_ACTIONS.RESET:
-                return initState;
+                return initInputState;
             default:
                 throw new Error('Wrong action type');
         }
     }
 
-    const [input, dispatchInput] = useReducer(inputReducer, initState);
-
-    const changeHandler = (e: ChangeEvent<InputElement>) => {
-        const action = { type: INPUT_ACTIONS.VALUE, payload: e.target.value };
-        dispatchInput(action as ValueAction);
-    };
-
-
-    const blurHandler = (e: ChangeEvent<InputElement>) => {
-        const action = { type: INPUT_ACTIONS.TOUCH };
-        dispatchInput(action as BlurAction);
-    };
-
-    const resetHandler = () => dispatchInput({ type: INPUT_ACTIONS.RESET });
+    const [input, dispatchInput] = useReducer(inputReducer, initInputState);
 
     return {
-        input, changeHandler, blurHandler, resetHandler
+        input,
+        changeHandler: changeHandler.bind(null, dispatchInput),
+        blurHandler: blurHandler.bind(null, dispatchInput),
+        resetHandler: resetHandler.bind(null, dispatchInput)
     };
-
 }
