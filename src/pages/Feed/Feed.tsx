@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { useLoaderData, json, redirect } from 'react-router-dom';
 
 import Button from '../../components/Button/Button';
 import FeedEdit from '../../components/FeedModal/FeedEdit';
 import Paginator from '../../components/Paginator/Paginator';
 import Post from '../../components/Post/Post';
-import { PostsResponse } from '../../types';
+import { PostsResponse, TPost } from '../../types';
 import { retrieveToken } from '../../utils/auth';
 import { buttonStyles } from '../../utils/buttonStyles';
 
@@ -15,34 +15,78 @@ interface FeedProps {
 
 }
 
+type ModalState = {
+    isOpen: boolean;
+    editPost: TPost | null;
+};
+
+enum FEED_MODAL_ACTIONS {
+    NEW = 'new',
+    EDIT = 'edit',
+    CLOSE = 'close'
+}
+
+type ModalAction = {
+    type: FEED_MODAL_ACTIONS;
+    post: TPost | null;
+};
+
+const initModalState: ModalState = {
+    isOpen: false,
+    editPost: null
+};
+
+function modalReducer(state: ModalState, action: ModalAction): ModalState {
+    switch (action.type) {
+        case FEED_MODAL_ACTIONS.NEW:
+            return { ...state, isOpen: true };
+        case FEED_MODAL_ACTIONS.EDIT:
+            return { ...state, isOpen: true, editPost: action.post };
+        case FEED_MODAL_ACTIONS.CLOSE:
+            return { ...state, isOpen: false, editPost: null };
+        default:
+            throw new Error('Wrong action type');
+    }
+}
+
 const Feed = () => {
     const data = useLoaderData() as Awaited<PostsResponse>;
-    const [isModal, setModal] = useState(false);
+    const [modalState, dispatchModal] = useReducer(modalReducer, initModalState);
 
-    const openModalHandler = () => {
-        console.log('OPEN-MODAL');
-        setModal(true);
+    const createPostHandler = () => {
+        const action: ModalAction = { type: FEED_MODAL_ACTIONS.NEW, post: null };
+        dispatchModal(action);
     };
-    const cancelHandler = () => {
-        console.log('CLOSE-MODAL');
-        setModal(false);
+    const cancelPostHandler = () => {
+        const action: ModalAction = { type: FEED_MODAL_ACTIONS.CLOSE, post: null };
+        dispatchModal(action);
     };
     const finishHandler = () => null;
+
+    const startEditPostHandler = (id: string) => {
+        const selectedPost = data.posts.find(post => post._id === id);
+        const action: ModalAction = { type: FEED_MODAL_ACTIONS.EDIT, post: selectedPost ?? null };
+        dispatchModal(action);
+    };
+
+    const deletePostHandler = (id: string) => {
+        console.log('deleting mock');
+    };
 
     return (
         <>
             <FeedEdit
-                editing={isModal}
-                selectedPost={null}
+                editing={modalState.isOpen}
+                selectedPost={modalState.editPost}
                 // loading={false}
-                onCancelEdit={cancelHandler}
+                onCancelEdit={cancelPostHandler}
             // onFinishEdit={finishHandler}
             />
             <section className="feed__control">
                 {/* <BaseButton mode="raised" design="accent">
                     <button>New Post</button>
                 </BaseButton> */}
-                <Button btnStyles={buttonStyles("accent", "raised")} onClick={openModalHandler} text="New Post" />
+                <Button btnStyles={buttonStyles("accent", "raised")} onClick={createPostHandler} text="New Post" />
             </section>
             <section className="feed">
                 {/* {this.state.postsLoading && (
@@ -68,8 +112,8 @@ const Feed = () => {
                             title={post.title}
                             image={post.imageUrl}
                             content={post.content}
-                        // onStartEdit={this.startEditPostHandler.bind(this, post._id)}
-                        // onDelete={this.deletePostHandler.bind(this, post._id)}
+                            onStartEdit={startEditPostHandler.bind(null, post._id)}
+                            onDelete={deletePostHandler.bind(null, post._id)}
                         />
                     ))}
                 </Paginator>

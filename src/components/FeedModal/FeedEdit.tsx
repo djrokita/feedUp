@@ -97,10 +97,14 @@ function FeedEdit({ editing, selectedPost, onCancelEdit }: FeedEditProps) {
             />
           </TextField>
           <div className="new-post__preview-image">
-            {!imageState.imagePreview && <p>Please choose an image.</p>}
+            {!imageState.imagePreview && !selectedPost && <p>Please choose an image.</p>}
             {imageState.imagePreview && (
               <Image imageUrl={imageState.imagePreview} contain left />
             )}
+            {!imageState.imagePreview && selectedPost?.imageUrl && (
+              <Image imageUrl={'http://localhost:8080/' + selectedPost.imageUrl} contain left />
+            )}
+
           </div>
           <TextField
             id="content"
