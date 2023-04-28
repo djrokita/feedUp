@@ -1,5 +1,5 @@
 import { useReducer } from 'react';
-import { useLoaderData, json, redirect } from 'react-router-dom';
+import { useLoaderData, json, redirect, useSearchParams, useParams, Link } from 'react-router-dom';
 
 import Button from '../../components/Button/Button';
 import FeedEdit from '../../components/FeedModal/FeedEdit';
@@ -86,7 +86,7 @@ const Feed = () => {
                 {/* <BaseButton mode="raised" design="accent">
                     <button>New Post</button>
                 </BaseButton> */}
-                <Button btnStyles={buttonStyles("accent", "raised")} onClick={createPostHandler} text="New Post" />
+                <Link className={buttonStyles("accent", "raised")} to="/new">New Post</Link>
             </section>
             <section className="feed">
                 {/* {this.state.postsLoading && (
@@ -143,35 +143,3 @@ export async function loader() {
     return await response.json();
 }
 
-export async function action({ request }: { request: Request; }) {
-    const token = retrieveToken();
-
-    if (!token) {
-        return redirect('/auth');
-    }
-
-    const formData = await request.formData();
-
-    const url = 'http://localhost:8080/feed/post';
-    const response = await fetch(url, {
-        method: request.method,
-        headers: {
-            Authentication: 'Bearer ' + token,
-        },
-        body: formData,
-    });
-
-    if (response.status === 422) {
-        return response;
-    }
-
-    // if (res.status !== 200 && res.status !== 201) {
-    //     throw new Error('Creating or editing a post failed!');
-    // }
-
-    if (!response.ok) {
-        throw response;
-    }
-
-    return redirect('/');
-}

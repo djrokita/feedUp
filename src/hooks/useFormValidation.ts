@@ -8,7 +8,7 @@ export function useFormValidation(inputValids: boolean[]) {
 
         setFormValid(isValid);
 
-    }, inputValids);
+    }, [inputValids]);
 
     return isFormValid;
 }

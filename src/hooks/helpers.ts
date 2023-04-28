@@ -98,6 +98,11 @@ export const uploadHandler = (dispatch: Dispatch<ValueAction>, value: string) =>
     dispatch(action);
 };
 
+export const uploadFileHandler = (dispatch: Dispatch<ValueAction>, value: string) => {
+    const action: ValueAction = { type: INPUT_ACTIONS.VALUE, payload: value };
+    dispatch(action);
+};
+
 export const previewHandler = async (dispatch: Dispatch<PreviewAction>, e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
         const preview = await getImagePreview(e.target.files[0]);

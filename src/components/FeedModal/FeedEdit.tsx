@@ -1,5 +1,5 @@
 import { useState, useRef, ChangeEvent, useEffect } from 'react';
-import { Form, useSubmit } from 'react-router-dom';
+import { Form, useSubmit, useSearchParams, generatePath } from 'react-router-dom';
 
 import Backdrop from '../Backdrop/Backdrop';
 import Modal from '../Modal/Modal';
@@ -20,12 +20,13 @@ type FeedEditProps = {
 function FeedEdit({ editing, selectedPost, onCancelEdit }: FeedEditProps) {
   const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur, uploadHandler: onTitleUpload, resetHandler: titleReset } = useInput([required, length({ min: 5 })]);
   const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur, uploadHandler: onContentUpload, resetHandler: contentReset } = useInput([required, length({ min: 5 })]);
-  const { input: imageState, changeHandler: onImageChange, fileHandler, previewHandler, blurHandler: onImageBlur, resetHandler: imageReset } = useFileInput([required]);
+  const { input: imageState, changeHandler: onImageChange, fileHandler, uploadHandler: onImageUpload, previewHandler, blurHandler: onImageBlur, resetHandler: imageReset } = useFileInput([required]);
 
   useEffect(() => {
     if (editing && selectedPost) {
       onTitleUpload(selectedPost.title);
       onContentUpload(selectedPost.content);
+      onImageUpload(selectedPost.imageUrl);
     }
 
     if (!editing) {
@@ -36,15 +37,28 @@ function FeedEdit({ editing, selectedPost, onCancelEdit }: FeedEditProps) {
   }, [editing]);
 
   const submit = useSubmit();
+  const [params, setParams] = useSearchParams();
   const formElement = useRef<HTMLFormElement | null>(null);
   const formIsValid = useFormValidation([titleState.valid, contentState.valid, imageState.valid]);
 
   const cancelPostChangeHandler = () => onCancelEdit();
   const acceptPostChangeHandler = () => {
     if (formElement.current instanceof HTMLFormElement) {
-      submit(formElement.current, {
-        method: "POST"
-      });
+      if (selectedPost) {
+        const path = generatePath('/:id', {
+          id: selectedPost._id
+        });
+        submit(formElement.current, {
+          method: "PUT",
+          // action: path
+        });
+        // setParams({ id: selectedPost._id });
+
+      } else {
+        submit(formElement.current, {
+          method: "POST",
+        });
+      }
 
       onCancelEdit();
     };
@@ -188,4 +202,4 @@ export default FeedEdit;
   //       formIsValid: formIsValid
   //     };
   //   });
-  // };
+  // };;

@@ -7,6 +7,7 @@ import NavigationItem from '../NavigationItems/NavigationItems';
 import './MainNavigation.css';
 
 const navItems = [
+  { id: 'new', text: 'New', link: '/new', auth: true },
   { id: 'feed', text: 'Feed', link: '/', auth: true },
   { id: 'login', text: 'Login', link: '/', auth: false },
   { id: 'signup', text: 'Signup', link: '/signup', auth: false },
