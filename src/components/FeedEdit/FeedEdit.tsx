@@ -13,32 +13,28 @@ import { buttonStyles } from '../../utils/buttonStyles';
 import { retrieveToken } from '../../utils/auth';
 
 type FeedEditProps = {
-    method: 'POST' | 'PUT';
     // editing: boolean;
     selectedPost?: TPost | null;
     // onCancelEdit: () => void;
 };
 
-function FeedEdit({ method, selectedPost = null }: FeedEditProps) {
+function FeedEdit({ selectedPost = null }: FeedEditProps) {
     const { input: titleState, changeHandler: onTitleChange, blurHandler: onTitleBlur, uploadHandler: onTitleUpload, resetHandler: titleReset } = useInput([required, length({ min: 5 })]);
     const { input: contentState, changeHandler: onContentChange, blurHandler: onContentBlur, uploadHandler: onContentUpload, resetHandler: contentReset } = useInput([required, length({ min: 5 })]);
     const { input: imageState, changeHandler: onImageChange, fileHandler, uploadHandler: onImageUpload, previewHandler, blurHandler: onImageBlur, resetHandler: imageReset } = useFileInput([required]);
 
-    // useEffect(() => {
-    //     if (editing && selectedPost) {
-    //         onTitleUpload(selectedPost.title);
-    //         onContentUpload(selectedPost.content);
-    //         onImageUpload(selectedPost.imageUrl);
-    //     }
+    const method = selectedPost ? 'PUT' : 'POST';
 
-    //     if (!editing) {
-    //         titleReset();
-    //         contentReset();
-    //         imageReset();
-    //     }
-    // }, [editing]);
+    useEffect(() => {
+        if (selectedPost) {
+            onTitleUpload(selectedPost.title);
+            onContentUpload(selectedPost.content);
+            onImageUpload(selectedPost.imageUrl);
+        }
 
-    const submit = useSubmit();
+    }, []);
+
+    // const submit = useSubmit();
     const [params, setParams] = useSearchParams();
     const formElement = useRef<HTMLFormElement | null>(null);
     const formIsValid = useFormValidation([titleState.valid, contentState.valid, imageState.valid]);
@@ -70,8 +66,9 @@ function FeedEdit({ method, selectedPost = null }: FeedEditProps) {
         }
     };
 
+
     return (
-        <Form method="POST" encType="multipart/form-data">
+        <Form method={method} encType="multipart/form-data">
             <TextField
                 id="title"
                 label="Title"
@@ -100,13 +97,13 @@ function FeedEdit({ method, selectedPost = null }: FeedEditProps) {
                 />
             </TextField>
             <div className="new-post__preview-image">
-                {/* {!imageState.imagePreview && !selectedPost && <p>Please choose an image.</p>}
+                {!imageState.imagePreview && !selectedPost && <p>Please choose an image.</p>}
                 {imageState.imagePreview && (
                     <Image imageUrl={imageState.imagePreview} contain left />
                 )}
                 {!imageState.imagePreview && selectedPost?.imageUrl && (
                     <Image imageUrl={'http://localhost:8080/' + selectedPost.imageUrl} contain left />
-                )} */}
+                )}
 
             </div>
             <TextField

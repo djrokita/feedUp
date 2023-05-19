@@ -30,7 +30,7 @@ function Post(props: PostProps) {
       </header>
       <div className="post__actions">
         <Link className={buttonStyles(null, "flat")} to={props.id}>View</Link>
-        <Button btnStyles={buttonStyles(null, "flat")} onClick={props.onStartEdit} text="Edit" />
+        <Link className={buttonStyles(null, "flat")} to={`/${props.id}/edit`}>Edit</Link>
         <Button btnStyles={buttonStyles("danger", "flat")} onClick={fakeStart} text="Delete" />
       </div>
     </article>

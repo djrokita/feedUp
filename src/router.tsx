@@ -52,8 +52,19 @@ function RootRouter() {
       },
       {
         path: '/:postId',
-        element: <SinglePost />,
-        loader: postLoader
+        id: 'single-post',
+        loader: postLoader,
+        children: [
+          {
+            index: true,
+            element: <SinglePost />,
+          },
+          {
+            path: '/:postId/edit',
+            element: <PostForm />,
+            action: postAction
+          }
+        ]
       },
       {
         path: '/logout',

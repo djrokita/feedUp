@@ -75,13 +75,13 @@ const Feed = () => {
 
     return (
         <>
-            <FeedEdit
+            {/* <FeedEdit
                 editing={modalState.isOpen}
                 selectedPost={modalState.editPost}
                 // loading={false}
                 onCancelEdit={cancelPostHandler}
             // onFinishEdit={finishHandler}
-            />
+            /> */}
             <section className="feed__control">
                 {/* <BaseButton mode="raised" design="accent">
                     <button>New Post</button>

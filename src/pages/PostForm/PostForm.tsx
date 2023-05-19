@@ -1,18 +1,18 @@
-import { redirect, json, useLoaderData, Params } from "react-router-dom";
+import { redirect, json, Params, useRouteLoaderData } from "react-router-dom";
 import { PostResponse } from "../../types";
 import { retrieveToken } from "../../utils/auth";
-import PostPreview from "../../components/PostPreview/PostPreview";
 import FeedEdit from "../../components/FeedEdit/FeedEdit";
 
 const PostForm = () => {
-    // const { post } = useLoaderData() as Awaited<PostResponse>;
+    const data = useRouteLoaderData('single-post') as Awaited<PostResponse>;
 
-    return <FeedEdit method="POST" />;
+    return <FeedEdit selectedPost={data.post} />;
 };
 
 export default PostForm;
 
-export async function action({ request, params }: { request: Request; params: unknown; }) {
+export async function action({ request, params, ctx }: { request: Request; params: Params<"postId">; }) {
+    console.log("🚀 ~ file: PostForm.tsx:15 ~ action ~ ctx:", ctx);
     // const searchParams = new URL(request.url).searchParams;
     // console.log("🚀 ~ file: Feed.tsx:147 ~ action ~ params:", searchParams);
     const token = retrieveToken();
@@ -22,7 +22,12 @@ export async function action({ request, params }: { request: Request; params: un
     }
 
     const formData = await request.formData();
-    const url = 'http://localhost:8080/feed/post';
+    let url = 'http://localhost:8080/feed/post';
+
+    if (request.method === 'PUT' && params?.postId) {
+        url = url + '/' + params.postId;
+    }
+
     const response = await fetch(url, {
         method: request.method,
         headers: {
